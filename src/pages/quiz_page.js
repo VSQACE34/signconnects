@@ -17,14 +17,23 @@ const QuizPage = () => {
   const selectedLevel = params.get('level');
   const selectedQuestionCount = parseInt(params.get('questions'), 10);
 
+  // Determine API 'type' parameter based on selected level
+  const getApiType = () => {
+    if (selectedLevel.includes('Numbers')) return 'number';
+    if (selectedLevel.includes('Letters')) return 'letter';
+    if (selectedLevel.includes('Words')) return 'word';
+    return 'word'; // Default to 'word' if not matched
+  };
+
   // Fetch quiz data from the API multiple times
   useEffect(() => {
     const fetchQuizData = async () => {
       setIsLoading(true);
       let fetchedQuestions = [];
+      const apiType = getApiType();  // Get the correct type for API
       try {
         for (let i = 0; i < selectedQuestionCount; i++) {
-          const response = await fetch('https://lnenem9b6b.execute-api.ap-southeast-2.amazonaws.com/prod/api/v1/quiz/');
+          const response = await fetch(`https://lnenem9b6b.execute-api.ap-southeast-2.amazonaws.com/prod/api/v1/quiz/?type=${apiType}`);
           const data = await response.json();
 
           const formattedQuestion = {
@@ -130,13 +139,15 @@ const QuizPage = () => {
   };
 
   return (
-    <div>
+    <>
       <NavBar />
-      <div className="container mx-auto mt-12 mb-12 px-4">
-        {renderQuiz()}
+      <div className="w-full bg-white py-8 lg:py-10" id="quizPage">
+        <div className="container mx-auto mt-12 mb-12 px-4">
+          {renderQuiz()}
+        </div>
       </div>
       <Footer />
-    </div>
+    </>
   );
 };
 

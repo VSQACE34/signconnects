@@ -126,7 +126,7 @@ const TranslatorPage = () => {
     const outputData = outputTensor.data;
 
     const maxIndex = outputData.indexOf(Math.max(...outputData));
-    const letters = ['A', 'B', 'C', 'D']; // Replace with dynamic data if necessary
+    const letters = ["because", "how_many", "idea", "laughter", "mind", "not_care", "or", "pain", "pity", "which", "why", "why-not", "word"]; // Replace with dynamic data if necessary
 
     return letters[maxIndex] || '';
   };
