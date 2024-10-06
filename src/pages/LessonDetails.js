@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
-import * as ort from 'onnxruntime-web';  // ONNX Runtime for running the model
+import * as ort from 'onnxruntime-web'; // ONNX Runtime for running the model
 import { Camera } from '@mediapipe/camera_utils'; // Import Camera correctly from mediapipe
 import { Holistic } from '@mediapipe/holistic'; // Mediapipe Holistic import
 import { getCookie } from '../components/CookieManage';
@@ -26,7 +26,11 @@ const LessonDetails = () => {
   useEffect(() => {
     // Fetch Auslan signs using the lesson_id from the route params
     const fetchSigns = async () => {
-      const response = await fetch(`https://lnenem9b6b.execute-api.ap-southeast-2.amazonaws.com/prod/api/v1/lessons/get_lesson_details?lesson_id=${lesson_id}&user_id=${getCookie('userId')}`);
+      const response = await fetch(
+        `https://lnenem9b6b.execute-api.ap-southeast-2.amazonaws.com/prod/api/v1/lessons/get_lesson_details?lesson_id=${lesson_id}&user_id=${getCookie(
+          'userId'
+        )}`
+      );
       const data = await response.json();
       setAuslanSigns(data);
       setSelectedSign(data[0]);
@@ -41,6 +45,8 @@ const LessonDetails = () => {
       console.log('Modal is open, setting timer for success popup.');
       timer = setTimeout(() => {
         console.log('Timer expired, closing modal and showing success popup.');
+        // Stop the camera
+        stopCamera();
         // Close the modal
         setIsModalOpen(false);
         // Show the success popup
@@ -52,12 +58,38 @@ const LessonDetails = () => {
     };
   }, [isModalOpen]);
 
+  // Function to stop the camera and clean up
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach((track) => {
+        track.stop();
+        console.log('Track stopped:', track);
+      });
+      setCameraStream(null);
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null; // Clear video element
+      console.log('Video element srcObject cleared.');
+    }
+    if (holisticInstance.current) {
+      holisticInstance.current = null; // Clear holistic instance
+      console.log('Holistic instance cleared.');
+    }
+    if (cameraInstance.current) {
+      cameraInstance.current.stop(); // Stop the camera properly
+      cameraInstance.current = null;
+      console.log('Camera instance stopped.');
+    }
+  };
+
   // Load the ONNX model
   const loadONNXModel = async () => {
     try {
-      const session = await ort.InferenceSession.create('https://the-boys-bucket.s3.ap-southeast-2.amazonaws.com/models/model.onnx');
+      const session = await ort.InferenceSession.create(
+        'https://the-boys-bucket.s3.ap-southeast-2.amazonaws.com/models/model.onnx'
+      );
       sessionRef.current = session;
-      console.log("ONNX Model loaded successfully");
+      console.log('ONNX Model loaded successfully');
     } catch (err) {
       console.error('Failed to load the ONNX model:', err);
     }
@@ -74,7 +106,8 @@ const LessonDetails = () => {
 
       // Initialize Holistic for Mediapipe
       const holistic = new Holistic({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`,
+        locateFile: (file) =>
+          `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`,
       });
 
       holistic.setOptions({
@@ -109,22 +142,30 @@ const LessonDetails = () => {
 
     // Extract pose keypoints
     if (results.poseLandmarks) {
-      results.poseLandmarks.forEach(landmark => keypoints.push(landmark.x, landmark.y, landmark.z, landmark.visibility));
+      results.poseLandmarks.forEach((landmark) =>
+        keypoints.push(landmark.x, landmark.y, landmark.z, landmark.visibility)
+      );
     }
 
     // Extract face keypoints
     if (results.faceLandmarks) {
-      results.faceLandmarks.forEach(landmark => keypoints.push(landmark.x, landmark.y, landmark.z));
+      results.faceLandmarks.forEach((landmark) =>
+        keypoints.push(landmark.x, landmark.y, landmark.z)
+      );
     }
 
     // Extract left hand keypoints
     if (results.leftHandLandmarks) {
-      results.leftHandLandmarks.forEach(landmark => keypoints.push(landmark.x, landmark.y, landmark.z));
+      results.leftHandLandmarks.forEach((landmark) =>
+        keypoints.push(landmark.x, landmark.y, landmark.z)
+      );
     }
 
     // Extract right hand keypoints
     if (results.rightHandLandmarks) {
-      results.rightHandLandmarks.forEach(landmark => keypoints.push(landmark.x, landmark.y, landmark.z));
+      results.rightHandLandmarks.forEach((landmark) =>
+        keypoints.push(landmark.x, landmark.y, landmark.z)
+      );
     }
 
     // Add zeros if landmarks are missing
@@ -152,10 +193,16 @@ const LessonDetails = () => {
     }
 
     // Flatten the sequence array and convert it to a Float32Array for ONNX model input
-    const inputTensor = new ort.Tensor('float32', new Float32Array(sequenceRef.current.flat()), [1, 30, sequenceRef.current[0].length]);
+    const inputTensor = new ort.Tensor(
+      'float32',
+      new Float32Array(sequenceRef.current.flat()),
+      [1, 30, sequenceRef.current[0].length]
+    );
 
     try {
-      const results = await sessionRef.current.run({ [sessionRef.current.inputNames[0]]: inputTensor });
+      const results = await sessionRef.current.run({
+        [sessionRef.current.inputNames[0]]: inputTensor,
+      });
       const predictedLetter = interpretONNXOutput(results);
       if (predictedLetter) {
         setPrediction(predictedLetter);
@@ -172,7 +219,7 @@ const LessonDetails = () => {
     const maxIndex = outputData.indexOf(Math.max(...outputData));
 
     // Assuming each object in auslanSigns contains an 'auslan_sign' property with the corresponding sign/letter
-    const letters = auslanSigns.map(sign => sign.auslan_sign); // Dynamically extract signs
+    const letters = auslanSigns.map((sign) => sign.auslan_sign); // Dynamically extract signs
 
     return letters[maxIndex] || ''; // Return the letter or an empty string if undefined
   };
@@ -184,32 +231,46 @@ const LessonDetails = () => {
     await startCamera();
   };
 
-  // Update the closeModal function
+  // Modify the closeModal function
   const closeModal = () => {
     console.log('closeModal called');
-
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(track => {
-        track.stop();
-        console.log('Track stopped:', track);
-      });
-      setCameraStream(null);
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null; // Clear video element
-      console.log('Video element srcObject cleared.');
-    }
-    if (holisticInstance.current) {
-      holisticInstance.current = null; // Clear holistic instance
-      console.log('Holistic instance cleared.');
-    }
-    if (cameraInstance.current) {
-      cameraInstance.current.stop(); // Stop the camera properly
-      cameraInstance.current = null;
-      console.log('Camera instance stopped.');
-    }
+    stopCamera();
     setIsModalOpen(false);
     setShowSuccessPopup(false); // Reset the success popup
+  };
+
+  // Handle the success popup close
+  const handleSuccessPopupClose = async () => {
+    console.log('handleSuccessPopupClose called');
+
+    // Stop the camera just in case
+    stopCamera();
+
+    // Send API request to update lesson status
+    try {
+      await fetch(
+        'https://lnenem9b6b.execute-api.ap-southeast-2.amazonaws.com/prod/api/v1/lessons/completed_a_lesson',
+        {
+          method: 'POST', // or 'PUT', depending on your API design
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_id: getCookie('userId'),
+            lesson_id: parseInt(lesson_id, 10),
+          }),
+        }
+      );
+      console.log('Lesson status updated successfully.');
+    } catch (error) {
+      console.error('Error updating lesson status:', error);
+    }
+
+    // Close the success popup
+    setShowSuccessPopup(false);
+
+    // Reload the page
+    window.location.reload();
   };
 
   if (!auslanSigns.length) {
@@ -218,11 +279,14 @@ const LessonDetails = () => {
 
   return (
     <>
-      <div className="flex justify-center items-center mt-8 w-full bg-white py-12 lg:py-24" id='lessonDetails'>
+      <div
+        className="flex justify-center items-center mt-8 w-full bg-white py-12 lg:py-24"
+        id="lessonDetails"
+      >
         <div>
           <NavBar />
         </div>
-  
+
         <div className="container mx-auto">
           {/* Display clickable list of all Auslan signs */}
           <div className="mb-4">
@@ -231,8 +295,11 @@ const LessonDetails = () => {
               {auslanSigns.map((sign, index) => (
                 <li
                   key={index}
-                  className={`cursor-pointer px-4 py-2 border ${selectedSign?.auslan_sign === sign.auslan_sign ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                    }`}
+                  className={`cursor-pointer px-4 py-2 border ${
+                    selectedSign?.auslan_sign === sign.auslan_sign
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200'
+                  }`}
                   onClick={() => setSelectedSign(sign)}
                 >
                   {sign.auslan_sign}
@@ -240,25 +307,33 @@ const LessonDetails = () => {
               ))}
             </ul>
           </div>
-  
+
           {/* Display the selected sign's details */}
           {selectedSign && (
             <div>
               <div className="flex items-center justify-between mb-4">
                 {/* Image on the left */}
                 <div className="w-1/2">
-                  <img src={selectedSign.image_url} alt={selectedSign.auslan_sign} className="w-full mb-4" />
+                  <img
+                    src={selectedSign.image_url}
+                    alt={selectedSign.auslan_sign}
+                    className="w-full mb-4"
+                  />
                 </div>
-  
+
                 {/* Video on the right */}
                 <div className="w-1/2">
-                  <video key={selectedSign.auslan_sign} controls className="w-full">
+                  <video
+                    key={selectedSign.auslan_sign}
+                    controls
+                    className="w-full"
+                  >
                     <source src={selectedSign.video_url} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 </div>
               </div>
-  
+
               {/* "Test" button */}
               <div className="flex justify-end">
                 <button
@@ -272,17 +347,22 @@ const LessonDetails = () => {
           )}
         </div>
       </div>
-  
+
       {/* Modal for Camera Feed and Prediction */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white p-8 rounded-lg shadow-lg relative">
             <h2 className="text-2xl mb-2 font-bold">Sign Language Prediction</h2>
             <p>Allow access to camera for prediction.</p>
-            <video ref={videoRef} autoPlay muted className="w-full h-auto mb-4"></video>
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              className="w-full h-auto mb-4"
+            ></video>
             <p className="text-2xl font-bold">Prediction: {prediction}</p>
             <button
-              onClick={() => closeModal()}
+              onClick={closeModal}
               className="absolute top-0 right-0 mt-2 mr-2 bg-red-500 text-white p-2 rounded"
             >
               Close
@@ -290,7 +370,7 @@ const LessonDetails = () => {
           </div>
         </div>
       )}
-  
+
       {/* Success Popup after 8 seconds */}
       {showSuccessPopup && (
         <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
@@ -298,7 +378,7 @@ const LessonDetails = () => {
             <h2 className="text-2xl mb-2 font-bold">Well done!</h2>
             <p>Please proceed with the next sign.</p>
             <button
-              onClick={() => setShowSuccessPopup(false)}
+              onClick={handleSuccessPopupClose}
               className="absolute top-0 right-0 mt-2 mr-2 bg-red-500 text-white p-2 rounded"
             >
               Close
@@ -306,10 +386,10 @@ const LessonDetails = () => {
           </div>
         </div>
       )}
-  
+
       <Footer />
     </>
   );
-  };
-  
-  export default LessonDetails;
+};
+
+export default LessonDetails;
