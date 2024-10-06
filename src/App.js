@@ -19,6 +19,9 @@ import LessonDetail from './pages/LessonDetails';
 import NotFound from './pages/NotFound';
 import SignLibrary from './pages/SignLibrary';
 import Signs from './pages/Sign';
+import QuizSelectionPage from './pages/quiz_selection';
+import TranslatorPage from './pages/translation';
+import QuizPage from './pages/quiz_page';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useDocTitle } from './components/CustomHook';
 import ScrollToTop from './components/ScrollToTop';
@@ -54,6 +57,9 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/sign_library" element={<SignLibrary />} />
+              <Route path="/quiz-selection" element={<QuizSelectionPage />} />
+              <Route path="/translation" element={<TranslatorPage />} />
+              <Route path="/quiz" element={<QuizPage />} />
               <Route path="/hand_sign/:hand_sign" element={<Signs />} />
               <Route path='*' element={<NotFound />} />
               <Route

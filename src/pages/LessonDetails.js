@@ -20,11 +20,13 @@ const LessonDetails = () => {
   const holisticInstance = useRef(null); // Ref for the holistic instance
   const cameraInstance = useRef(null); // Ref for the camera instance
 
+  // New state variable for the success popup
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
   useEffect(() => {
     // Fetch Auslan signs using the lesson_id from the route params
     const fetchSigns = async () => {
       const response = await fetch(`https://lnenem9b6b.execute-api.ap-southeast-2.amazonaws.com/prod/api/v1/lessons/get_lesson_details?lesson_id=${lesson_id}&user_id=${getCookie('userId')}`);
-      // const response = await fetch(`http://localhost:8000/api/v1/lessons/get_lesson_details?lesson_id=${lesson_id}&user_id=${getCookie('userId')}`);
       const data = await response.json();
       setAuslanSigns(data);
       setSelectedSign(data[0]);
@@ -32,13 +34,28 @@ const LessonDetails = () => {
     fetchSigns();
   }, [lesson_id]);
 
-  // Find the first sign with status 'In Progress'
-  const firstInProgressIndex = auslanSigns.findIndex(sign => sign.status === "In Progress");
+  // UseEffect to handle the success popup timer
+  useEffect(() => {
+    let timer;
+    if (isModalOpen) {
+      console.log('Modal is open, setting timer for success popup.');
+      timer = setTimeout(() => {
+        console.log('Timer expired, closing modal and showing success popup.');
+        // Close the modal
+        setIsModalOpen(false);
+        // Show the success popup
+        setShowSuccessPopup(true);
+      }, 8000); // 8 seconds
+    }
+    return () => {
+      clearTimeout(timer); // Clean up the timer
+    };
+  }, [isModalOpen]);
 
-  // Load the ONNX model//
+  // Load the ONNX model
   const loadONNXModel = async () => {
     try {
-      const session = await ort.InferenceSession.create('https://the-boys-bucket.s3.ap-southeast-2.amazonaws.com/models/model.onnx'); // Adjust the path accordingly
+      const session = await ort.InferenceSession.create('https://the-boys-bucket.s3.ap-southeast-2.amazonaws.com/models/model.onnx');
       sessionRef.current = session;
       console.log("ONNX Model loaded successfully");
     } catch (err) {
@@ -71,7 +88,7 @@ const LessonDetails = () => {
       holisticInstance.current = holistic; // Save Holistic instance to ref
 
       // Initialize and start the camera
-      const camera = new Camera(videoRef.current, {
+      cameraInstance.current = new Camera(videoRef.current, {
         onFrame: async () => {
           if (holisticInstance.current && videoRef.current) {
             await holistic.send({ image: videoRef.current });
@@ -80,8 +97,7 @@ const LessonDetails = () => {
         width: 640,
         height: 480,
       });
-      cameraInstance.current = camera;
-      camera.start();
+      cameraInstance.current.start();
     } catch (error) {
       console.error('Error accessing the camera: ', error);
     }
@@ -149,16 +165,15 @@ const LessonDetails = () => {
     }
   };
 
-
   const interpretONNXOutput = (results) => {
-    const outputTensor = results['output_0'];
+    const outputTensor = results[sessionRef.current.outputNames[0]];
     const outputData = outputTensor.data;
-  
+
     const maxIndex = outputData.indexOf(Math.max(...outputData));
-  
+
     // Assuming each object in auslanSigns contains an 'auslan_sign' property with the corresponding sign/letter
     const letters = auslanSigns.map(sign => sign.auslan_sign); // Dynamically extract signs
-  
+
     return letters[maxIndex] || ''; // Return the letter or an empty string if undefined
   };
 
@@ -169,30 +184,37 @@ const LessonDetails = () => {
     await startCamera();
   };
 
-  // Cleanup: stop camera and holistic instance when closing modal
+  // Update the closeModal function
   const closeModal = () => {
+    console.log('closeModal called');
+
     if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream.getTracks().forEach(track => {
+        track.stop();
+        console.log('Track stopped:', track);
+      });
       setCameraStream(null);
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null; // Clear video element
+      console.log('Video element srcObject cleared.');
     }
     if (holisticInstance.current) {
       holisticInstance.current = null; // Clear holistic instance
+      console.log('Holistic instance cleared.');
     }
     if (cameraInstance.current) {
       cameraInstance.current.stop(); // Stop the camera properly
       cameraInstance.current = null;
+      console.log('Camera instance stopped.');
     }
     setIsModalOpen(false);
+    setShowSuccessPopup(false); // Reset the success popup
   };
 
   if (!auslanSigns.length) {
     return <div>Loading...</div>;
   }
-
-  // const handleContinueLesson = (lessonId) => {
-  //   // Directly navigate to the lesson details page
-  //   navigate(`/lesson/${lessonId}`);
-  // };
 
   return (
     <>
@@ -200,7 +222,7 @@ const LessonDetails = () => {
         <div>
           <NavBar />
         </div>
-
+  
         <div className="container mx-auto">
           {/* Display clickable list of all Auslan signs */}
           <div className="mb-4">
@@ -209,23 +231,16 @@ const LessonDetails = () => {
               {auslanSigns.map((sign, index) => (
                 <li
                   key={index}
-                  className={`cursor-pointer px-4 py-2 border ${selectedSign?.auslan_sign === sign.auslan_sign ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                  onClick={() => {
-                    if (index <= firstInProgressIndex) {
-                      setSelectedSign(sign);
-                    }
-                  }}
-                  style={{
-                    opacity: index > firstInProgressIndex ? 0.5 : 1,  // Gray out the buttons after the first 'In Progress'
-                    pointerEvents: index > firstInProgressIndex ? 'none' : 'auto' // Disable interaction for grayed-out buttons
-                  }}
+                  className={`cursor-pointer px-4 py-2 border ${selectedSign?.auslan_sign === sign.auslan_sign ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                    }`}
+                  onClick={() => setSelectedSign(sign)}
                 >
                   {sign.auslan_sign}
                 </li>
               ))}
             </ul>
           </div>
-
+  
           {/* Display the selected sign's details */}
           {selectedSign && (
             <div>
@@ -234,7 +249,7 @@ const LessonDetails = () => {
                 <div className="w-1/2">
                   <img src={selectedSign.image_url} alt={selectedSign.auslan_sign} className="w-full mb-4" />
                 </div>
-
+  
                 {/* Video on the right */}
                 <div className="w-1/2">
                   <video key={selectedSign.auslan_sign} controls className="w-full">
@@ -243,7 +258,7 @@ const LessonDetails = () => {
                   </video>
                 </div>
               </div>
-
+  
               {/* "Test" button */}
               <div className="flex justify-end">
                 <button
@@ -257,7 +272,7 @@ const LessonDetails = () => {
           )}
         </div>
       </div>
-
+  
       {/* Modal for Camera Feed and Prediction */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
@@ -265,9 +280,9 @@ const LessonDetails = () => {
             <h2 className="text-2xl mb-2 font-bold">Sign Language Prediction</h2>
             <p>Allow access to camera for prediction.</p>
             <video ref={videoRef} autoPlay muted className="w-full h-auto mb-4"></video>
-            <p>Prediction: {prediction}</p>
+            <p className="text-2xl font-bold">Prediction: {prediction}</p>
             <button
-              onClick={closeModal}
+              onClick={() => closeModal()}
               className="absolute top-0 right-0 mt-2 mr-2 bg-red-500 text-white p-2 rounded"
             >
               Close
@@ -275,14 +290,26 @@ const LessonDetails = () => {
           </div>
         </div>
       )}
-
+  
+      {/* Success Popup after 8 seconds */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg relative">
+            <h2 className="text-2xl mb-2 font-bold">Well done!</h2>
+            <p>Please proceed with the next sign.</p>
+            <button
+              onClick={() => setShowSuccessPopup(false)}
+              className="absolute top-0 right-0 mt-2 mr-2 bg-red-500 text-white p-2 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+  
       <Footer />
     </>
   );
-};
-
-export default LessonDetails;
-
-
-
-// const response = await fetch(`https://lnenem9b6b.execute-api.ap-southeast-2.amazonaws.com/prod/api/v1/lessons/get_lesson_details?lesson_id=${lesson_id}`);
+  };
+  
+  export default LessonDetails;

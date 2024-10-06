@@ -25,6 +25,19 @@ const NavLinks = () => {
             <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/#signs" scroll={el => scrollWithOffset(el)}>
                 Sign Library
             </HashLink>
+
+            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/quiz-selection">
+                Quiz 
+            </HashLink>
+
+            <HashLink className="relative px-4 font-extrabold text-gray-500 hover:text-blue-900 inline-flex items-center" smooth to="/translation">
+            AUSLAN Translator
+            {/* Beta Tag */}
+            <span className="ml-2 text-xs text-white bg-red-500 px-1.5 py-0.5 rounded-full">
+                beta
+            </span>
+            </HashLink>
+
             {!isAuthenticated() ? (
                 <>
                     <HashLink className="text-gray-500 hover:bg-blue-100 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-xl" smooth to="/login">
