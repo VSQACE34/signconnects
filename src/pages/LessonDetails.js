@@ -82,18 +82,29 @@ const LessonDetails = () => {
     }
   };
 
-  // Load the ONNX model
-  const loadONNXModel = async () => {
-    try {
-      const session = await ort.InferenceSession.create(
-        'https://the-boys-bucket.s3.ap-southeast-2.amazonaws.com/models/model.onnx'
-      );
-      sessionRef.current = session;
-      console.log('ONNX Model loaded successfully');
-    } catch (err) {
-      console.error('Failed to load the ONNX model:', err);
-    }
+  // Select the ONNX model based on the lesson_id
+  const getModelPath = () => {
+    if (lesson_id === 8) return "/action_verbs.onnx";
+    if (lesson_id === 9) return "/descr_adj.onnx";
+    if (lesson_id === 10) return "/feel_emot_ques.onnx";
+    if (lesson_id === 11) return "/nouns.onnx";
+    if (lesson_id === 12) return "/freq.onnx";
+    if (lesson_id === 13) return "/time_pos_dir.onnx";
+    // Default model for lessons 1-7 or any other lesson
+    return "/model.onnx";
   };
+
+    // Load the ONNX model dynamically based on lesson_id
+    const loadONNXModel = async () => {
+      try {
+        const modelPath = getModelPath(); // Get the appropriate model path
+        const session = await ort.InferenceSession.create(modelPath);
+        sessionRef.current = session;
+        console.log(`ONNX Model for lesson ${lesson_id} loaded from ${modelPath}`);
+      } catch (err) {
+        console.error('Failed to load the ONNX model:', err);
+      }
+    };
 
   // Start the camera and feed the live stream into the video element
   const startCamera = async () => {
