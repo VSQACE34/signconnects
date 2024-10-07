@@ -1,35 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import NavBar from '../components/Navbar/NavBar';
-import Footer from '../components/Footer';
 import {useDocTitle} from '../components/CustomHook';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import { isAuthenticated } from '../components/Auth';
+import { isAuthenticated } from '../components/WebsiteLock';
 import { setCookie } from '../components/CookieManage';
-import { useAuth } from '../components/AuthContext';
-import ReCAPTCHA from 'react-google-recaptcha';
-
-const RECAPTCHA_SITE_KEY = '6LdK_FgqAAAAAKuoBJTZo75DOWnWs3wiJJ9TksDR';
 
 const Login = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
-    const recaptchaRef = useRef(null);
-
-    const { login } = useAuth();
     
     useEffect(() => {
         if (isAuthenticated()) {
             navigate('/');
         }
-        const recaptchaScript = document.createElement('script');
-        recaptchaScript.src = "https://www.google.com/recaptcha/api.js";
-        recaptchaScript.async = true;
-        recaptchaScript.defer = true;
-        document.body.appendChild(recaptchaScript);
     }, [navigate]);
 
-    useDocTitle('Login - Sign-Connect');
+    useDocTitle('Website Authentication - TA16');
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -41,8 +27,6 @@ const Login = () => {
         if (!password) formErrors.password = 'Password is required';
             return formErrors;
     };
-
-
 
     const clearErrors = () => {
         setErrors({});
@@ -56,10 +40,7 @@ const Login = () => {
             setErrors(formErrors);
             return;
         }
-        recaptchaRef.current.execute();
-    };
 
-    const handleRecaptchaChange = () => {
         const formData = {
             username: username,
             password: password
@@ -69,7 +50,7 @@ const Login = () => {
 
         axios({
             method: 'post',
-            url: 'https://g3ywl1bwh3.execute-api.ap-southeast-2.amazonaws.com/prod/login',
+            url: 'https://g3ywl1bwh3.execute-api.ap-southeast-2.amazonaws.com/prod/websiteLogin',
             data: formData,
             headers: {
                 'Content-Type': 'application/json',
@@ -77,17 +58,10 @@ const Login = () => {
         })
         .then(function (response) {
             if (response && response.data) {
-                const { accessToken, idToken, refreshToken, userId, username: cognitoUsername } = response.data;
-
-                // Token hndling
-                setCookie('accessToken', accessToken, 7);
-                setCookie('idToken', idToken, 7);
-                setCookie('userId', userId, 7);
-                setCookie('cognitoUsername', cognitoUsername, 7);
+                const { websiteAuth} = response.data;
+                setCookie('websiteAuth', websiteAuth, 1);
                 navigate('/');
-                login();
-            }
-            
+            }            
         })
         .catch(function (error) {
             // Handle errors
@@ -104,15 +78,12 @@ const Login = () => {
 
     return (
         <>
-            <div>
-                <NavBar />
-            </div>
             <div id='login' className="mt-8 w-full bg-white py-12 lg:py-24" style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
                 <div className="my-4" data-aos="zoom-in">
                     <form onSubmit={handleSubmit} id="loginForm">
                         <div className="w-full bg-white p-8 my-4 md:px-12 lg:w-full lg:pl-30 lg:pr-30 mr-auto rounded-2xl shadow-2xl">
                             <div className="flex">
-                                <h1 className="font-bold text-center lg:text-left text-blue-900 uppercase text-4xl mx-auto">Login</h1>
+                                <h1 className="font-bold text-center lg:text-left text-blue-900 uppercase text-4xl mx-auto">TA16 Sign-Connect Website Login</h1>
                             </div>
 
                             <div className="grid grid-cols-1 gap-5 mt-5 ">
@@ -164,30 +135,10 @@ const Login = () => {
                                     Sign In
                                 </button>
                             </div>
-
-                            <div className="flex justify-center items-center my-2">
-                                <Link to="/forgot-password" className="flex justify-center text-gray-500 hover:text-blue-500 focus:outline-none text-sm">
-                                    Forgotten Password?
-                                </Link>                                
-                            </div>
-                            
-                            <hr className="my-4 border-gray-300" />
-                            <div className="flex justify-center items-center my-4">
-                                <Link to="/register" className="uppercase text-sm font-bold tracking-wide bg-gray-500 hover:bg-green-900 text-gray-100 p-3 rounded-lg focus:outline-none focus:shadow-outline">
-                                    Create new account
-                                </Link>
-                            </div>
                         </div>
                     </form>
-                    <ReCAPTCHA
-                        sitekey={RECAPTCHA_SITE_KEY}
-                        size="invisible"
-                        ref={recaptchaRef}
-                        onChange={handleRecaptchaChange}
-                    />
                 </div>
             </div>
-            <Footer />
         </>
     );
 };
