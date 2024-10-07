@@ -16,6 +16,12 @@ const TranslatorPage = () => {
   const sequenceRef = useRef([]); // Sequence of keypoints for prediction
   const holisticInstance = useRef(null); // Ref for the holistic instance
   const cameraInstance = useRef(null); // Ref for the camera instance
+  const [isCameraOn, setIsCameraOn] = useState(false);
+
+  // Added state variables for unique words and translations
+  const [uniqueWords, setUniqueWords] = useState(new Set());
+  const [translatedText, setTranslatedText] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Load the ONNX model
   const loadONNXModel = async () => {
@@ -65,13 +71,34 @@ const TranslatorPage = () => {
       });
       cameraInstance.current = camera;
       camera.start();
+
+      // Set the camera status to on
+      setIsCameraOn(true);
     } catch (error) {
       console.error('Error accessing the camera: ', error);
     }
   };
 
+  // Stop the camera
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    if (holisticInstance.current) {
+      holisticInstance.current = null;
+    }
+    if (cameraInstance.current) {
+      cameraInstance.current.stop();
+      cameraInstance.current = null;
+    }
+    // Set camera status to off
+    setIsCameraOn(false);
+  };
+
   // Process Mediapipe results and extract keypoints
   const onResults = (results) => {
+    console.log('Mediapipe Results:', results); // Debug
     const keypoints = [];
 
     if (results.poseLandmarks) {
@@ -108,13 +135,21 @@ const TranslatorPage = () => {
       return;
     }
 
-    const inputTensor = new ort.Tensor('float32', new Float32Array(sequenceRef.current.flat()), [1, 30, sequenceRef.current[0].length]);
+    const inputTensor = new ort.Tensor(
+      'float32',
+      new Float32Array(sequenceRef.current.flat()),
+      [1, 30, sequenceRef.current[0].length]
+    );
 
     try {
-      const results = await sessionRef.current.run({ [sessionRef.current.inputNames[0]]: inputTensor });
-      const predictedLetter = interpretONNXOutput(results);
-      if (predictedLetter) {
-        setPrediction(predictedLetter);
+      const results = await sessionRef.current.run({
+        [sessionRef.current.inputNames[0]]: inputTensor
+      });
+      const predictedWord = interpretONNXOutput(results);
+      console.log('Predicted Word:', predictedWord); // Debug
+      if (predictedWord) {
+        setPrediction(predictedWord); // Update prediction state
+        addUniqueWord(predictedWord); // Aggregate unique words
       }
     } catch (error) {
       console.error('Error running ONNX model:', error);
@@ -122,33 +157,94 @@ const TranslatorPage = () => {
   };
 
   const interpretONNXOutput = (results) => {
+    console.log('ONNX Results:', results); // Debug
     const outputTensor = results['output_0'];
+    if (!outputTensor) {
+      console.error('Output tensor "output_0" not found');
+      return '';
+    }
     const outputData = outputTensor.data;
 
     const maxIndex = outputData.indexOf(Math.max(...outputData));
-    const letters = ["because", "how_many", "idea", "laughter", "mind", "not_care", "or", "pain", "pity", "which", "why", "why-not", "word"]; // Replace with dynamic data if necessary
+    const words = ["because", "how_many", "idea", "laughter", "mind", "not_care", "or", "pain", "pity", "which", "why", "why-not", "word"]; // Ensure this matches your model's classes
 
-    return letters[maxIndex] || '';
+    return words[maxIndex] || '';
   };
 
+  // Add unique words and limit to 3-4 words before translating
+  const addUniqueWord = (word) => {
+    setUniqueWords((prevWords) => {
+      const newWords = new Set(prevWords);
+      newWords.add(word);
+
+      console.log('Unique Words:', newWords); // Debug
+
+      // Translate words when 3 or 4 unique words are collected
+      if (newWords.size === 3 || newWords.size === 4) {
+        const wordsToTranslate = [...newWords]; // Create a copy as an array
+        translateWords(wordsToTranslate); // Pass the copied array
+        newWords.clear(); // Clear the original set after copying
+      }
+
+      return newWords;
+    });
+  };
+
+  // Call OpenAI's API to translate unique words into a meaningful sentence
+  const translateWords = async (wordsArray) => {
+    console.log('Translating Words:', wordsArray); // Debug
+    setLoading(true);
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer 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`,  // Ensure correct format
+        },
+        body: JSON.stringify({
+          model: 'gpt-4',  // Or 'gpt-4' for GPT-4
+          messages: [
+            {
+              "role": "system",
+              "content": "You are a helpful assistant that creates meaningful sentences from a list of words."
+            },
+            {
+              "role": "user",
+              "content": `Here are the unique words recognized by the sign language recognition model: ${wordsArray.join(', ')}. Make them into a meaningful sentence as if you were translating them into English.`,
+            }
+          ],
+          max_tokens: 100,
+        }),
+      });
+
+      console.log('OpenAI API Response Status:', response.status); // Debug
+
+      // Check if response is OK
+      if (!response.ok) {
+        throw new Error(`OpenAI API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('OpenAI API Response Data:', data); // Debug
+
+      // Check if the data has the expected structure
+      if (data.choices && data.choices.length > 0) {
+        setTranslatedText(data.choices[0].message.content.trim());  // Get the first response choice and display it
+        console.log('Translated Text:', data.choices[0].message.content.trim()); // Debug
+      } else {
+        throw new Error('Unexpected response format from OpenAI API');
+      }
+    } catch (error) {
+      console.error('Error calling OpenAI API:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to handle starting the camera and loading the ONNX model
   const handleTest = async () => {
     await loadONNXModel();
     await startCamera();
-  };
-
-  // Cleanup: stop camera and holistic instance when closing modal
-  const stopCamera = () => {
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
-      setCameraStream(null);
-    }
-    if (holisticInstance.current) {
-      holisticInstance.current = null;
-    }
-    if (cameraInstance.current) {
-      cameraInstance.current.stop();
-      cameraInstance.current = null;
-    }
   };
 
   return (
@@ -162,7 +258,7 @@ const TranslatorPage = () => {
           {/* First section: Research and video */}
           <div className="flex flex-col md:flex-row mb-8">
             <div className="w-full md:w-2/3 pr-8">
-            <h2 className="text-4xl font-bold mb-4 gradient-text">Sign Language Translation Using AI</h2>
+              <h2 className="text-4xl font-bold mb-4 gradient-text">Sign Language Translation Using AI</h2>
               <p className="text-lg mb-6 leading-relaxed">
                 Recent advancements in AI and machine learning have led to significant improvements in sign language translation. 
                 Current models are able to recognize individual signs, but the challenge remains in capturing the fluidity of sign language, 
@@ -171,7 +267,7 @@ const TranslatorPage = () => {
               </p>
             </div>
             <div className="w-full md:w-1/3">
-              <video controls className="w-full">
+              <video controls autoPlay className="w-full">
                 <source src="/demo_video.mp4" type="video/mp4" />  {/* Placeholder video */}
                 Your browser does not support the video tag.
               </video>
@@ -199,9 +295,32 @@ const TranslatorPage = () => {
               Start Camera and Test
             </button>
 
+            {/* Stop Camera Button (appears after the camera is started) */}
+            {isCameraOn && (
+              <button
+                onClick={stopCamera}
+                className="bg-red-500 text-white px-6 py-3 rounded-lg ml-4"
+                >
+                  Stop Camera
+              </button>
+            )}
+
             <div className="mt-6">
               <video ref={videoRef} autoPlay muted className="mx-auto w-full max-w-lg h-auto"></video>
               <p className="mt-4 text-xl font-bold">Prediction: {prediction || 'Waiting for input...'}</p>
+
+              {/* Loading Indicator */}
+              {loading && (
+                <p className="mt-4 text-xl font-bold">Translating...</p>
+              )}
+
+              {/* Display Translated Text */}
+              {translatedText && (
+                <div className="mt-6">
+                  <h2 className="text-2xl font-bold">Possible Translation:</h2>
+                  <div className="p-4 bg-green-100 rounded">{translatedText}</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
