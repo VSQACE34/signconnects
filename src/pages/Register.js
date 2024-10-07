@@ -1,20 +1,29 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import NavBar from '../components/Navbar/NavBar';
 import { useNavigate, Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 import {useDocTitle} from '../components/CustomHook';
 import axios from 'axios';
-// import emailjs from 'emailjs-com';
 import { showSuccessReport } from '../components/notiflixConfig';
 import { isAuthenticated } from '../components/Auth';
+import ReCAPTCHA from 'react-google-recaptcha';
+
+const RECAPTCHA_SITE_KEY = '6LdK_FgqAAAAAKuoBJTZo75DOWnWs3wiJJ9TksDR';
 
 const Register = (props) => {
     useDocTitle('Register - Sign-Connect');
     const navigate = useNavigate();
+    const recaptchaRef = useRef(null);
+
     useEffect(() => {
         if (isAuthenticated()) {
             navigate('/');
         }
+        const recaptchaScript = document.createElement('script');
+        recaptchaScript.src = "https://www.google.com/recaptcha/api.js";
+        recaptchaScript.async = true;
+        recaptchaScript.defer = true;
+        document.body.appendChild(recaptchaScript);
     }, [navigate]);
 
     const [username, setUsername] = useState('');
@@ -54,7 +63,10 @@ const Register = (props) => {
             setErrors(formErrors);
             return;
         }
+        recaptchaRef.current.execute();
+    };
 
+    const handleRecaptchaChange = () => {
         const formData = {
             username: username,
             password: password,
@@ -138,6 +150,9 @@ const Register = (props) => {
                                     {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                                 </div>
                             </div>
+                            <div className="mt-4 mb-6 text-center text-sm text-red-500 font-semibold">
+                                Please do not use real personal details as your username.
+                            </div>
 
                             <div className="my-4">
                                 <label htmlFor="securityQuestion" className="text-gray-700">Please select a security question</label>
@@ -198,10 +213,14 @@ const Register = (props) => {
                                     Already have an account?
                                 </Link>
                             </div>
-
                         </div>
                     </form>
-                    
+                    <ReCAPTCHA
+                        sitekey={RECAPTCHA_SITE_KEY}
+                        size="invisible"
+                        ref={recaptchaRef}
+                        onChange={handleRecaptchaChange}
+                    />
                 </div>
             </div>
             <Footer />

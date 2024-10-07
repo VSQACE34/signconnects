@@ -8,7 +8,7 @@ const Courses = () => {
     // Initially show only 4 courses
     const [visibleCourses, setVisibleCourses] = useState(3);
 
-    const { isLoggedIn, login, logout } = useAuth();
+    const { isLoggedIn } = useAuth();
 
     // Function to handle "Load More" button click
     const handleLoadMore = () => {

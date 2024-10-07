@@ -1,17 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
 import {useDocTitle} from '../components/CustomHook';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { isAuthenticated } from '../components/Auth';
-import { showSuccessReport } from '../components/notiflixConfig';
-import { setCookie, getCookie } from '../components/CookieManage';
+import { setCookie } from '../components/CookieManage';
 import { useAuth } from '../components/AuthContext';
+import ReCAPTCHA from 'react-google-recaptcha';
+
+const RECAPTCHA_SITE_KEY = '6LdK_FgqAAAAAKuoBJTZo75DOWnWs3wiJJ9TksDR';
 
 const Login = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+    const recaptchaRef = useRef(null);
 
     const { login } = useAuth();
     
@@ -19,6 +22,11 @@ const Login = () => {
         if (isAuthenticated()) {
             navigate('/');
         }
+        const recaptchaScript = document.createElement('script');
+        recaptchaScript.src = "https://www.google.com/recaptcha/api.js";
+        recaptchaScript.async = true;
+        recaptchaScript.defer = true;
+        document.body.appendChild(recaptchaScript);
     }, [navigate]);
 
     useDocTitle('Login - Sign-Connect');
@@ -48,7 +56,10 @@ const Login = () => {
             setErrors(formErrors);
             return;
         }
+        recaptchaRef.current.execute();
+    };
 
+    const handleRecaptchaChange = () => {
         const formData = {
             username: username,
             password: password
@@ -66,16 +77,14 @@ const Login = () => {
         })
         .then(function (response) {
             if (response && response.data) {
-                const { accessToken, idToken, refreshToken, userId} = response.data;
+                const { accessToken, idToken, refreshToken, userId, username: cognitoUsername } = response.data;
 
                 // Token hndling
                 setCookie('accessToken', accessToken, 7);
                 setCookie('idToken', idToken, 7);
                 setCookie('refreshToken', refreshToken, 7);
                 setCookie('userId', userId, 7);
-                console.log(getCookie('userId'));
-
-                // showSuccessReport('Success', response.data.message);
+                setCookie('cognitoUsername', cognitoUsername, 7);
                 navigate('/');
                 login();
             }
@@ -118,7 +127,6 @@ const Login = () => {
                                         value={username}
                                         onChange={(e) => {
                                             setUsername(e.target.value);
-                                            clearErrors();
                                         }}
                                     />
                                     {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
@@ -136,7 +144,6 @@ const Login = () => {
                                         value={password}
                                         onChange={(e) => {
                                             setPassword(e.target.value);
-                                            clearErrors();
                                         }}
                                     />
                                     {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
@@ -173,7 +180,12 @@ const Login = () => {
                             </div>
                         </div>
                     </form>
-                    
+                    <ReCAPTCHA
+                        sitekey={RECAPTCHA_SITE_KEY}
+                        size="invisible"
+                        ref={recaptchaRef}
+                        onChange={handleRecaptchaChange}
+                    />
                 </div>
             </div>
             <Footer />

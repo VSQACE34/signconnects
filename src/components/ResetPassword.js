@@ -1,21 +1,24 @@
 import React, { useState } from 'react';
-import NavBar from '../components/Navbar/NavBar';
-import Footer from '../components/Footer';
-import {useDocTitle} from '../components/CustomHook';
+import NavBar from './Navbar/NavBar';
+import Footer from './Footer';
+import {useDocTitle} from './CustomHook';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { showSuccessReport } from '../components/notiflixConfig';
+import { showSuccessReport } from './notiflixConfig';
+import { getCookie } from './CookieManage';
+import ReCAPTCHA from 'react-google-recaptcha';
 
+const RECAPTCHA_SITE_KEY = '6LcCN1kqAAAAAD8WSnLa5cZCirN_udQVvfWkpPDg';
 
 const ResetPassword = (props) => {
-    const navigate = useNavigate();
-
     useDocTitle('Reset Password - Sign-Connect');
-    
+
+    const username = getCookie('cognitoUsername');  
     const [password, setPassword] = useState('');
     const [reenteredPassword, setReenteredPassword] = useState('');
     const [errors, setErrors] = useState({});
-    const [apiErrorMessage, setApiErrorMessage] = useState('');    
+    const [apiErrorMessage, setApiErrorMessage] = useState('');
+    const [recaptchaToken, setRecaptchaToken] = useState('');
+    
 
     const validateForm = () => {
         let formErrors = {};
@@ -27,9 +30,19 @@ const ResetPassword = (props) => {
         return formErrors;
     };
 
+    const handleRecaptchaChange = (token) => {
+        setRecaptchaToken(token);
+    };
+
     const clearErrors = () => {
         setErrors({});
         setApiErrorMessage('');
+    };
+
+    const clearForm = () => {
+        setPassword('');
+        setReenteredPassword('');
+        clearErrors();
     };
 
     const handleSubmit = (e) => {
@@ -39,8 +52,15 @@ const ResetPassword = (props) => {
             setErrors(formErrors);
             return;
         }
+        
+        // Stop form submission if reCAPTCHA is not check
+        if (!recaptchaToken) {
+            setApiErrorMessage('Please complete the reCAPTCHA to proceed.');
+            return;  
+        }
 
         const formData = {
+            username: username,
             password: password
         };
 
@@ -48,7 +68,7 @@ const ResetPassword = (props) => {
 
         axios({
             method: 'post',
-            url: 'https://g3ywl1bwh3.execute-api.ap-southeast-2.amazonaws.com/prod/forgotPassword',
+            url: 'https://g3ywl1bwh3.execute-api.ap-southeast-2.amazonaws.com/prod/resetPassword',
             data: formData,
             headers: {
                 'Content-Type': 'application/json',
@@ -57,7 +77,7 @@ const ResetPassword = (props) => {
         .then(function (response) {
             if (response && response.data) {
                 showSuccessReport('Success', response.data.message);
-                navigate('/login');
+                clearForm();
             }
         })
         .catch(function (error) {
@@ -78,7 +98,7 @@ const ResetPassword = (props) => {
             <div>
                 <NavBar />
             </div>
-            <div id='login' className="mt-8 w-full bg-white py-12 lg:py-24" style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
+            <div id='login' className="mt-4 w-full bg-white py-4 lg:py-8" style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
                 <div className="container mx-auto my-8 px-4 lg:px-20" data-aos="zoom-in" style={{ maxWidth: '700px' }} >
                     <form onSubmit={handleSubmit} id="loginForm">
                         <div className="w-full bg-white p-8 my-4 md:px-12 lg:w-full lg:pl-30 lg:pr-30 mr-auto rounded-2xl shadow-2xl">
@@ -134,6 +154,13 @@ const ResetPassword = (props) => {
                                 >
                                     Submit
                                 </button>
+                            </div>
+
+                            <div className="flex justify-center mt-4">
+                                <ReCAPTCHA
+                                    sitekey={RECAPTCHA_SITE_KEY}
+                                    onChange={handleRecaptchaChange}
+                                />
                             </div>
                         </div>
                     </form>                    

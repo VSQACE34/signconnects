@@ -1,6 +1,5 @@
 import { showSuccessReport } from '../components/notiflixConfig';
 import { deleteCookie, getCookie } from '../components/CookieManage';
-import { useAuth } from '../components/AuthContext';
 
 export const isAuthenticated = () => {
     return !!getCookie('accessToken');
