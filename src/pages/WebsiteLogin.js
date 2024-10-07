@@ -83,7 +83,7 @@ const Login = () => {
                     <form onSubmit={handleSubmit} id="loginForm">
                         <div className="w-full bg-white p-8 my-4 md:px-12 lg:w-full lg:pl-30 lg:pr-30 mr-auto rounded-2xl shadow-2xl">
                             <div className="flex">
-                                <h1 className="font-bold text-center lg:text-left text-blue-900 uppercase text-4xl mx-auto">Login</h1>
+                                <h1 className="font-bold text-center lg:text-left text-blue-900 uppercase text-4xl mx-auto">TA16 Sign-Connect Website Login</h1>
                             </div>
 
                             <div className="grid grid-cols-1 gap-5 mt-5 ">
