@@ -51,13 +51,12 @@ const QuizPage = () => {
   // Helper function to determine quiz type based on level
   const getTypeFromLevel = (level) => {
     switch (level) {
-      case 'Level 1 - numbers': return 'number';
-      case 'Level 2 - letters': return 'letter';
-      case 'Level 3 - words': return 'word';
+      case 'Level 1 - Numbers': return 'number';
+      case 'Level 2 - Letters': return 'letter';
+      case 'Level 3 - Words': return 'word';
       default: return 'word'; // default to 'word' if no match
     }
-  };
-
+  }; 
   // Handle answer selection
   const handleAnswerSelect = (questionIndex, selectedAnswer) => {
     setAnswers({ ...answers, [questionIndex]: selectedAnswer });
