@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {useDocTitle} from '../components/CustomHook';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { isAuthenticated } from '../components/WebsiteLock';
 import { setCookie } from '../components/CookieManage';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { HashLink } from 'react-router-hash-link';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation  } from 'react-router-dom';
 import { isAuthenticated, handleLogout } from '../Auth';
 import { useAuth } from '../AuthContext';
 import ProfileIcon from '../../images/profileIcon.png';
@@ -14,25 +14,31 @@ const scrollWithOffset = (el) => {
 
 const NavLinks = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { logout } = useAuth();
+
+    const isActive = (path) => {
+        return location.pathname == path ? 'border-b-2 border-blue-900 mt-s' : '';
+    };
+    
     return (
         <>
-            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/" scroll={el => scrollWithOffset(el)}>
+            <HashLink className={`px-4 font-extrabold text-gray-500 hover:text-blue-900 pb-2 ${isActive("/")}`} smooth to="/" scroll={el => scrollWithOffset(el)}>
                 Home
             </HashLink>
-            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/courses" scroll={el => scrollWithOffset(el)}>
+            <HashLink className={`px-4 font-extrabold text-gray-500 hover:text-blue-900 pb-2 ${isActive("/courses")}`} smooth to="/courses" scroll={el => scrollWithOffset(el)}>
                 Courses
             </HashLink>
-            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/sign_library">
+            <HashLink className={`px-4 font-extrabold text-gray-500 hover:text-blue-900 pb-2 ${isActive("/sign_library")}`} smooth to="/sign_library">
                 Sign Library
             </HashLink>
-            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/quiz-selection">
+            <HashLink className={`px-4 font-extrabold text-gray-500 hover:text-blue-900 pb-2 ${isActive("/quiz-selection")}`} smooth to="/quiz-selection">
                 Quiz 
             </HashLink>
-            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/insight">
+            <HashLink className={`px-4 font-extrabold text-gray-500 hover:text-blue-900 pb-2 ${isActive("/insight")}`} smooth to="/insight">
                 Insight
             </HashLink>
-            <HashLink className="relative px-4 font-extrabold text-gray-500 hover:text-blue-900 inline-flex items-center" smooth to="/translation">
+            <HashLink className={`px-4 font-extrabold text-gray-500 hover:text-blue-900 pb-2 ${isActive("/translation")}`} smooth to="/translation">
             AUSLAN Translator
             {/* Beta Tag */}
             <span className="ml-2 text-xs text-white bg-red-500 px-1.5 py-0.5 rounded-full">

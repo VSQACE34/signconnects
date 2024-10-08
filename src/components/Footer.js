@@ -64,7 +64,7 @@ const Footer = () => {
                         to="#"
                         className=" hover:text-gray-900"
                     >
-                        Molad e Konsult
+                        TA16
                     </HashLink>. All rights reserved.
                     </div>
                 </div>

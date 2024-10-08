@@ -77,7 +77,7 @@ const Login = () => {
         })
         .then(function (response) {
             if (response && response.data) {
-                const { accessToken, idToken, refreshToken, userId, username: cognitoUsername } = response.data;
+                const { accessToken, idToken, userId, username: cognitoUsername } = response.data;
 
                 // Token hndling
                 setCookie('accessToken', accessToken, 7);

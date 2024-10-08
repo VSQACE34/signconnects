@@ -1,6 +1,5 @@
 import Courses from '../components/Courses';
 import NavBar from '../components/Navbar/NavBar';
-import React, { useState } from 'react';
 import Footer from '../components/Footer';
 import { AuthProvider } from '../components/AuthContext';
 
