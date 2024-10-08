@@ -17,13 +17,13 @@ const NavLinks = () => {
     const { logout } = useAuth();
     return (
         <>
-            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/#about" scroll={el => scrollWithOffset(el)}>
-                About
+            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/" scroll={el => scrollWithOffset(el)}>
+                Home
             </HashLink>
-            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/#courses" scroll={el => scrollWithOffset(el)}>
+            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/courses" scroll={el => scrollWithOffset(el)}>
                 Courses
             </HashLink>
-            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/#signs" scroll={el => scrollWithOffset(el)}>
+            <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/sign_library">
                 Sign Library
             </HashLink>
             <HashLink className="px-4 font-extrabold text-gray-500 hover:text-blue-900" smooth to="/quiz-selection">

@@ -104,87 +104,89 @@ const Login = () => {
 
     return (
         <>
-            <div>
-                <NavBar />
-            </div>
-            <div id='login' className="mt-8 w-full bg-white py-12 lg:py-24" style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
-                <div className="my-4" data-aos="zoom-in">
-                    <form onSubmit={handleSubmit} id="loginForm">
-                        <div className="w-full bg-white p-8 my-4 md:px-12 lg:w-full lg:pl-30 lg:pr-30 mr-auto rounded-2xl shadow-2xl">
-                            <div className="flex">
-                                <h1 className="font-bold text-center lg:text-left text-blue-900 uppercase text-4xl mx-auto">Login</h1>
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-5 mt-5 ">
-                                <div>
-                                    <label htmlFor="username" className="text-gray-700">Username:</label>
-                                    <input
-                                        name="username"
-                                        className="w-full lg:w-full bg-gray-100 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline"
-                                        type="text"
-                                        placeholder="Enter Username*"
-                                        value={username}
-                                        onChange={(e) => {
-                                            setUsername(e.target.value);
-                                        }}
-                                    />
-                                    {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+            <div className="flex justify-center items-center mt-8 w-full bg-white py-12 lg:py-8" id='LoginPage'>
+                <div>
+                    <NavBar />
+                </div>
+                <div id='login' className="mt-8 w-full bg-white py-12 lg:py-24" style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
+                    <div className="my-4" data-aos="zoom-in">
+                        <form onSubmit={handleSubmit} id="loginForm">
+                            <div className="w-full bg-white p-8 my-4 md:px-12 lg:w-full lg:pl-30 lg:pr-30 mr-auto rounded-2xl shadow-2xl">
+                                <div className="flex">
+                                    <h1 className="font-bold text-center lg:text-left text-blue-900 uppercase text-4xl mx-auto">Login</h1>
                                 </div>
-                            </div>
+
+                                <div className="grid grid-cols-1 gap-5 mt-5 ">
+                                    <div>
+                                        <label htmlFor="username" className="text-gray-700">Username:</label>
+                                        <input
+                                            name="username"
+                                            className="w-full lg:w-full bg-gray-100 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline"
+                                            type="text"
+                                            placeholder="Enter Username*"
+                                            value={username}
+                                            onChange={(e) => {
+                                                setUsername(e.target.value);
+                                            }}
+                                        />
+                                        {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+                                    </div>
+                                </div>
+                                    
+                                <div className="grid grid-cols-1 gap-5 mt-5">
+                                    <div>
+                                        <label htmlFor="password" className="text-gray-700">Password:</label>
+                                        <input
+                                            name="password"
+                                            className="w-full lg:w-full bg-gray-100 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline"
+                                            type="password"
+                                            placeholder="Enter Password*"
+                                            value={password}
+                                            onChange={(e) => {
+                                                setPassword(e.target.value);
+                                            }}
+                                        />
+                                        {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+                                    </div>
+                                </div>
+
+                                {errorMessage && (
+                                    <div style={{ color: 'red', marginBottom: '10px' }} className="text-center">
+                                        {errorMessage}
+                                    </div>
+                                )}
+
+                                <div className="my-2 w-full lg:w-2/4 mt-5 mx-auto">
+                                    <button
+                                        type="submit"
+                                        id="submitBtn"
+                                        className="uppercase text-sm font-bold tracking-wide bg-gray-500 hover:bg-blue-900 text-gray-100 p-3 rounded-lg w-full focus:outline-none focus:shadow-outline"
+                                    >
+                                        Sign In
+                                    </button>
+                                </div>
+
+                                <div className="flex justify-center items-center my-2">
+                                    <Link to="/forgot-password" className="flex justify-center text-gray-500 hover:text-blue-500 focus:outline-none text-sm">
+                                        Forgotten Password?
+                                    </Link>                                
+                                </div>
                                 
-                            <div className="grid grid-cols-1 gap-5 mt-5">
-                                <div>
-                                    <label htmlFor="password" className="text-gray-700">Password:</label>
-                                    <input
-                                        name="password"
-                                        className="w-full lg:w-full bg-gray-100 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline"
-                                        type="password"
-                                        placeholder="Enter Password*"
-                                        value={password}
-                                        onChange={(e) => {
-                                            setPassword(e.target.value);
-                                        }}
-                                    />
-                                    {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+                                <hr className="my-4 border-gray-300" />
+                                <div className="flex justify-center items-center my-4">
+                                    <Link to="/register" className="uppercase text-sm font-bold tracking-wide bg-gray-500 hover:bg-green-900 text-gray-100 p-3 rounded-lg focus:outline-none focus:shadow-outline">
+                                        Create new account
+                                    </Link>
                                 </div>
                             </div>
-
-                            {errorMessage && (
-                                <div style={{ color: 'red', marginBottom: '10px' }} className="text-center">
-                                    {errorMessage}
-                                </div>
-                            )}
-
-                            <div className="my-2 w-full lg:w-2/4 mt-5 mx-auto">
-                                <button
-                                    type="submit"
-                                    id="submitBtn"
-                                    className="uppercase text-sm font-bold tracking-wide bg-gray-500 hover:bg-blue-900 text-gray-100 p-3 rounded-lg w-full focus:outline-none focus:shadow-outline"
-                                >
-                                    Sign In
-                                </button>
-                            </div>
-
-                            <div className="flex justify-center items-center my-2">
-                                <Link to="/forgot-password" className="flex justify-center text-gray-500 hover:text-blue-500 focus:outline-none text-sm">
-                                    Forgotten Password?
-                                </Link>                                
-                            </div>
-                            
-                            <hr className="my-4 border-gray-300" />
-                            <div className="flex justify-center items-center my-4">
-                                <Link to="/register" className="uppercase text-sm font-bold tracking-wide bg-gray-500 hover:bg-green-900 text-gray-100 p-3 rounded-lg focus:outline-none focus:shadow-outline">
-                                    Create new account
-                                </Link>
-                            </div>
-                        </div>
-                    </form>
-                    <ReCAPTCHA
-                        sitekey={RECAPTCHA_SITE_KEY}
-                        size="invisible"
-                        ref={recaptchaRef}
-                        onChange={handleRecaptchaChange}
-                    />
+                        </form>
+                        <ReCAPTCHA
+                            sitekey={RECAPTCHA_SITE_KEY}
+                            size="invisible"
+                            ref={recaptchaRef}
+                            onChange={handleRecaptchaChange}
+                        />
+                    </div>
                 </div>
             </div>
             <Footer />

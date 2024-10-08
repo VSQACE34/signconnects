@@ -14,6 +14,7 @@ import Register from './pages/Register';
 import WebsiteLogin from './pages/WebsiteLogin';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
+import CoursePage from './pages/CoursePage';
 import Lessons from './pages/Lessons';
 import LessonDetail from './pages/LessonDetails';
 import NotFound from './pages/NotFound';
@@ -70,6 +71,7 @@ function App() {
                       <Route path="/translation" element={<TranslatorPage />} />
                       <Route path="/quiz" element={<QuizPage />} />
                       <Route path="/hand_sign/:hand_sign" element={<Signs />} />
+                      <Route path="/courses" element={<CoursePage />} />
                       <Route path='*' element={<NotFound />} />
                       <Route
                         path="/lessons/:course_id"
