@@ -301,7 +301,7 @@ const LessonDetails = () => {
         <div className="container mx-auto">
           {/* Display clickable list of all Auslan signs */}
           <div className="mb-4">
-            <h2 className="text-2xl mb-2 font-bold">Choose a Sign:</h2>
+            <h2 className="text-2xl mb-2 font-bold">Click on the sign you wish to learn:</h2>
             <ul className="flex space-x-4">
               {auslanSigns.map((sign, index) => (
                 <li

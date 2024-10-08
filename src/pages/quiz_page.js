@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
 
@@ -165,6 +165,15 @@ const QuizPage = () => {
         </div>
 
         <div className="flex justify-between items-center mt-6">
+        <div className="flex">
+            <Link
+              to="/quiz-selection"
+              // className="text-gray-500 hover:bg-blue-100 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-lg"
+              className="bg-gray-500 hover:bg-blue-400 text-gray-100 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-lg"
+            >
+              Change Quiz
+            </Link>
+          </div>
           {currentQuestion > 0 ? (
             <button
               onClick={handlePrevious}
@@ -192,7 +201,7 @@ const QuizPage = () => {
                 Submit Quiz
               </button>
             )
-          )}
+          )}          
         </div>
 
         {isSubmitted && (
