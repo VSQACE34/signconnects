@@ -16,12 +16,13 @@ const Home = () => {
     // Handle scroll progress
     const handleScroll = () => {
         const scrollTop = window.scrollY; // Current scroll position
-        const documentHeight = document.documentElement.scrollHeight - window.innerHeight; // Total scrollable area
+        const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
         const scrollPercentage = (scrollTop / documentHeight) * 100;
 
         setScrollProgress(scrollPercentage); // Set the scroll progress percentage
     };
 
+    // Actice listening to scroll
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
         return () => {
@@ -29,6 +30,7 @@ const Home = () => {
         };
     }, []);
 
+    // Scroll to top
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
