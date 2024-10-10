@@ -20,13 +20,15 @@ const Hero = () => {
                             </h1>
                             <div className="text-xl font-semibold tracking-tight mb-5 text-gray-500">Bridging Gaps with Auslan – Where Learning Meets Understanding..</div>
                             <p className="mt-4 text-xl pr-8">
-                                Enter Text Here Akshit The more text looks better The more text looks better The more text looks better The more text looks better
+                                Sign-Connect is an AI-powered tool designed to make learning AUSLAN simple and engaging.  
                             </p>
                             <p className="mt-4 text-xl pr-8">
-                                Enter Text Here Akshit The more text looks better The more text looks better The more text looks better The more text looks better
+                                You can learn at your own pace through interactive video lessons and gain a comprehensive understanding of sign language.
+                                Our ML-based quizzes allow you to test your knowledge in real time, 
+                                providing personalized feedback and helping you track your progress as you master new signs. 
                             </p>
                             <p className="mt-4 text-xl pr-8">
-                                Enter Text Here Akshit The more text looks better The more text looks better The more text looks better The more text looks better
+                                Whether you're a beginner or looking to improve, Sign-Connect supports your journey with an intuitive and effective learning experience.                                
                             </p>
                             <div className="mb-4 space-x-0 md:space-x-2 md:mb-8">
                                 {!isAuthenticated() && (

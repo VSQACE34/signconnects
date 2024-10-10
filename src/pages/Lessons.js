@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
 import axios from 'axios';
-import { getCookie } from '../components/CookieManage';
+import { setCookie, getCookie } from '../components/CookieManage';
 import {useDocTitle} from '../components/CustomHook';
 
 const Lessons = () => {
@@ -11,10 +11,9 @@ const Lessons = () => {
   const { course_id } = useParams(); // Get the course_id from the route parameter
   const [lessons, setLessons] = useState([]);
   const navigate = useNavigate(); // Hook for navigation
+  setCookie('course_id', course_id, 2);
 
   useEffect(() => {
-    console.log(course_id);
-    console.log(getCookie('userId'));
     const fetchData = async () => {
       const response = await fetch(`https://lnenem9b6b.execute-api.ap-southeast-2.amazonaws.com/prod/api/v1/lessons/?course_id=${course_id}&user_id=${getCookie('userId')}`);
     //   const response = await fetch(`http://localhost:8000/api/v1/lessons/?course_id=${course_id}&user_id=${getCookie('userId')}`);
@@ -131,6 +130,14 @@ const Lessons = () => {
                 </div>
               </div>
             </section>
+          </div>
+          <div className="mt-8 flex justify-center">
+            <Link
+                  to="/courses"
+                  className="bg-gray-500 hover:bg-blue-400 text-gray-100 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-xl"
+                >
+                  Back to Courses
+            </Link>
           </div>
         </div>
       </div>
