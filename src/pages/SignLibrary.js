@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
 import { useParams } from "react-router-dom";
+import {useDocTitle} from '../components/CustomHook';
 
 const SignLibrary = () => {
+    useDocTitle('Sign Library - Sign-Connect');
     const [signs, setSigns] = useState([]);
     const [searchQuery, setSearchQuery] = useState(''); // Add state for search query
 

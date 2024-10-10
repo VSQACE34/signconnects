@@ -38,8 +38,8 @@ const Sign = () => {
             <div className="flex items-center justify-between mb-4">
               {/* Image on the left */}
               <div className="w-1/2 flex justify-center items-center">
-                <img src={signImageFrame} className="absolute min-w-[200px] w-1/4 h-auto mb-4"/>
-                <img src={sign.ImageUrl} alt={sign.AuslanSign} className="min-w-[150px] w-1/3 h-auto mb-4" />
+                <img src={signImageFrame} className="absolute min-w-[200px] w-2/5 h-auto mb-4"/>
+                <img src={sign.ImageUrl} alt={sign.AuslanSign} className="min-w-[150px] w-2/3 h-auto mb-4" />
               </div>
 
               {/* Video on the right */}

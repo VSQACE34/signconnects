@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
+import {useDocTitle} from '../components/CustomHook';
 
 const QuizSelectionPage = () => {
+  useDocTitle('Quizes - Sign-Connect');
   const [level, setLevel] = useState('');
   const [questionCount, setQuestionCount] = useState('');
   const navigate = useNavigate();

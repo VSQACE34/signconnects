@@ -4,8 +4,10 @@ import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
 import axios from 'axios';
 import { getCookie } from '../components/CookieManage';
+import {useDocTitle} from '../components/CustomHook';
 
 const Lessons = () => {
+  useDocTitle('Lessons - Sign-Connect');
   const { course_id } = useParams(); // Get the course_id from the route parameter
   const [lessons, setLessons] = useState([]);
   const navigate = useNavigate(); // Hook for navigation

@@ -1,8 +1,10 @@
 import React from "react";
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
+import {useDocTitle} from '../components/CustomHook';
 
 const Insight = () => {
+    useDocTitle('Insight - Sign-Connect');
     return (
         <>
             <div className="flex justify-center items-center mt-8 w-full bg-white py-12 lg:py-2" id='InsightPage'>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 // import Cta from '../components/Cta';
+import {useDocTitle} from '../components/CustomHook';
 import Footer from '../components/Footer';
 import Hero from '../components/Hero';
 import Intro from '../components/Intro';
@@ -9,6 +10,7 @@ import { AuthProvider } from '../components/AuthContext';
 import upArrow from '../images/up-arrow.png';
 
 const Home = () => {
+    useDocTitle('Home - Sign-Connect');
     const [scrollProgress, setScrollProgress] = useState(0);
 
     // Handle scroll progress
