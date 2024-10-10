@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
-
+import {useDocTitle} from '../components/CustomHook';
 import '../index.css'; // Importing CSS for quiz page
 
 const QuizPage = () => {
+  useDocTitle('Quiz - Sign-Connect');
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(0);
@@ -137,12 +138,12 @@ const QuizPage = () => {
                 key={i}
                 onClick={() => handleAnswerSelect(currentQuestion, option)}
                 disabled={isSubmitted}
-                className={`option-btn p-4 border rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 ${
-                  answers[currentQuestion] === option ? 'bg-blue-500 text-green' : 'bg-white text-black'
+                className={`option-btn p-4 border-8 border-solid rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 ${
+                  answers[currentQuestion] === option ? 'bg-blue-500 text-black border-black' : 'bg-white text-black'
                 } ${
                   isSubmitted && question.correctAnswer === option
                     ? 'border-green-500'
-                    : isSubmitted && answers[currentQuestion] === option
+                  : isSubmitted && answers[currentQuestion] === option && answers[currentQuestion] !== question.correctAnswer
                     ? 'border-red-500'
                     : ''
                 }`}
@@ -165,6 +166,15 @@ const QuizPage = () => {
         </div>
 
         <div className="flex justify-between items-center mt-6">
+        <div className="flex">
+            <Link
+              to="/quiz-selection"
+              // className="text-gray-500 hover:bg-blue-100 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-lg"
+              className="bg-gray-500 hover:bg-blue-400 text-gray-100 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-lg"
+            >
+              Change Quiz
+            </Link>
+          </div>
           {currentQuestion > 0 ? (
             <button
               onClick={handlePrevious}
@@ -192,7 +202,7 @@ const QuizPage = () => {
                 Submit Quiz
               </button>
             )
-          )}
+          )}          
         </div>
 
         {isSubmitted && (

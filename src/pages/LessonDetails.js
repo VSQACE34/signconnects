@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
 import * as ort from 'onnxruntime-web'; // ONNX Runtime for running the model
 import { Camera } from '@mediapipe/camera_utils'; // Import Camera correctly from mediapipe
 import { Holistic } from '@mediapipe/holistic'; // Mediapipe Holistic import
 import { getCookie } from '../components/CookieManage';
+import {useDocTitle} from '../components/CustomHook';
+import signImageFrame from '../images/signImageFrame.png';
 
 const LessonDetails = () => {
+  useDocTitle('Lesson - Sign-Connect');
   const { lesson_id } = useParams();
   const [auslanSigns, setAuslanSigns] = useState([]);
   const [selectedSign, setSelectedSign] = useState(null);
@@ -24,7 +27,7 @@ const LessonDetails = () => {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   useEffect(() => {
-    // Fetch Auslan signs using the lesson_id from the route params
+    // Fetch Auslan signs using the lesson_id from the route params    
     const fetchSigns = async () => {
       const response = await fetch(
         `https://lnenem9b6b.execute-api.ap-southeast-2.amazonaws.com/prod/api/v1/lessons/get_lesson_details?lesson_id=${lesson_id}&user_id=${getCookie(
@@ -301,7 +304,7 @@ const LessonDetails = () => {
         <div className="container mx-auto">
           {/* Display clickable list of all Auslan signs */}
           <div className="mb-4">
-            <h2 className="text-2xl mb-2 font-bold">Choose a Sign:</h2>
+            <h2 className="text-2xl mb-2 font-bold">Click on the sign you wish to learn:</h2>
             <ul className="flex space-x-4">
               {auslanSigns.map((sign, index) => (
                 <li
@@ -324,11 +327,12 @@ const LessonDetails = () => {
             <div>
               <div className="flex items-center justify-between mb-4">
                 {/* Image on the left */}
-                <div className="w-1/2">
+                <div className="w-1/2 flex justify-center items-center">
+                <img src={signImageFrame} className="absolute min-w-[200px] w-1/4 h-auto mb-4"/>
                   <img
                     src={selectedSign.image_url}
                     alt={selectedSign.auslan_sign}
-                    className="w-full mb-4"
+                    className="min-w-[150px] w-5/12 h-auto mb-4"
                   />
                 </div>
 
@@ -354,10 +358,19 @@ const LessonDetails = () => {
                   Test
                 </button>
               </div>
+              <div className="mt-8 flex justify-center">
+                <Link
+                      to={`/lessons/${getCookie('course_id')}`}
+                      className="bg-gray-500 hover:bg-blue-400 text-gray-100 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-xl"
+                    >
+                      Back to Lesson
+                </Link>
+              </div>  
             </div>
           )}
-        </div>
+        </div>        
       </div>
+      
 
       {/* Modal for Camera Feed and Prediction */}
       {isModalOpen && (

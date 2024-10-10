@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
+import { Link } from 'react-router-dom';
+import signImageFrame from '../images/signImageFrame.png';
 
 const Sign = () => {
   const { hand_sign } = useParams(); // Get the lesson_id from the route parameter
@@ -35,8 +37,9 @@ const Sign = () => {
           <div>
             <div className="flex items-center justify-between mb-4">
               {/* Image on the left */}
-              <div className="w-1/2">
-                <img src={sign.ImageUrl} alt={sign.AuslanSign} className="w-full mb-4" />
+              <div className="w-1/2 flex justify-center items-center">
+                <img src={signImageFrame} className="absolute min-w-[200px] w-1/4 h-auto mb-4"/>
+                <img src={sign.ImageUrl} alt={sign.AuslanSign} className="min-w-[150px] w-5/12 h-auto mb-4" />
               </div>
 
               {/* Video on the right */}
@@ -46,6 +49,15 @@ const Sign = () => {
                   Your browser does not support the video tag.
                 </video>
               </div>
+            </div>
+            <div className="mt-8 flex justify-center">
+              <Link
+                to="/sign_library"
+                // className="text-gray-500 hover:bg-blue-100 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-xl"
+                className="bg-gray-500 hover:bg-blue-400 text-gray-100 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-xl"
+              >
+                Back to Sign Library
+              </Link>
             </div>
           </div>
         </div>

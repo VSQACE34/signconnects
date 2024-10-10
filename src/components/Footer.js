@@ -58,13 +58,16 @@ const Footer = () => {
 
                     <div className="flex flex-wrap items-center md:justify-between justify-center mx-auto px-4">
                 <div className="w-full md:w-4/12 px-4 mx-auto text-center py-2">
+                    <div className="text-sm text-gray-200 font-semibold py-1 hover:text-gray-900">
+                        "We acknowledge the Aboriginal/Torres Strait Islanders, Owners of the land pay our respects to Elders past, present and emerging. We also recognise their connection to the Country and role in caring for and maintaining Country over thousands of years."
+                    </div>
                     <div className="text-sm text-gray-200 font-semibold py-1">
-                    Copyright &copy; {new Date().getFullYear()}{"  "}
+                        Copyright &copy; {new Date().getFullYear()}{"  "}
                     <HashLink
                         to="#"
                         className=" hover:text-gray-900"
                     >
-                        Molad e Konsult
+                        TA16 - Sign Connect
                     </HashLink>. All rights reserved.
                     </div>
                 </div>

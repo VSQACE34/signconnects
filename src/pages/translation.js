@@ -4,10 +4,11 @@ import Footer from '../components/Footer';
 import * as ort from 'onnxruntime-web';  // ONNX Runtime for running the model
 import { Camera } from '@mediapipe/camera_utils'; // Import Camera correctly from mediapipe
 import { Holistic } from '@mediapipe/holistic'; // Mediapipe Holistic import
-
+import {useDocTitle} from '../components/CustomHook';
 import '../index.css'
 
 const TranslatorPage = () => {
+  useDocTitle('Auslan Translator - Sign-Connect');
   const [isModelLoaded, setIsModelLoaded] = useState(false);
   const [cameraStream, setCameraStream] = useState(null);
   const [prediction, setPrediction] = useState('');

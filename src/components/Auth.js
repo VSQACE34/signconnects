@@ -12,5 +12,5 @@ export const handleLogout = (navigate, logout) => {
     deleteCookie('userId');
     logout(); // Call the logout function from AuthContext to update isLoggedIn state
     showSuccessReport('Successfully Logged Out', 'Hope to see you again!');
-    navigate('/');
+    navigate('/login');
 };

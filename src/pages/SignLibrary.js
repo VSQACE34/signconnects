@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
 import { useParams } from "react-router-dom";
+import {useDocTitle} from '../components/CustomHook';
 
 const SignLibrary = () => {
+    useDocTitle('Sign Library - Sign-Connect');
     const [signs, setSigns] = useState([]);
     const [searchQuery, setSearchQuery] = useState(''); // Add state for search query
 
@@ -59,7 +61,7 @@ const SignLibrary = () => {
                                     {filteredSigns.map((sign, index) => (
                                         <div
                                             key={index}
-                                            className="bg-white transition-all ease-in-out duration-400 overflow-hidden text-gray-700 hover:bg-gray-500 hover:text-white rounded-lg shadow-2xl p-3 group"
+                                            className="bg-white transition-all ease-in-out duration-400 overflow-hidden text-gray-700 hover:bg-gray-500 hover:text-white rounded-lg shadow-2xl p-3 group flex flex-col justify-between"
                                         >
                                             <div className="m-2 text-justify text-sm">
                                                 <img
@@ -69,12 +71,14 @@ const SignLibrary = () => {
                                                 />
                                                 <h2 className="font-semibold my-4 text-2xl text-center">{sign.AuslanSign}</h2>
                                             </div>
-                                            <Link to={`/hand_sign/${sign.AuslanSign}`} className="text-white bg-blue-900 hover:bg-blue-800 inline-flex items-center justify-center w-full px-6 py-3 my-4 text-lg shadow-xl rounded-xl">
-                                                Select
-                                                <svg className="w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                                                </svg>
-                                            </Link>
+                                            <div className="mt-auto">
+                                                <Link to={`/hand_sign/${sign.AuslanSign}`} className="text-white bg-blue-900 hover:bg-blue-800 inline-flex items-center justify-center w-full px-6 py-3 my-4 text-lg shadow-xl rounded-xl">
+                                                    Select
+                                                    <svg className="w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                                                    </svg>
+                                                </Link>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
