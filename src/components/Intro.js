@@ -20,11 +20,13 @@ const Intro = () => {
                             Your browser does not support the video tag.
                         </video>
                     </div>
-                    <div className="w-full lg:w-5/12 flex flex-col justify-start pl-12 pr-8 mt-4">
-                        <h3 className="text-2xl font-bold text-blue-900">Product Video Descript Here</h3>
-                        <p className="mt-4 text-lg">
-                            Enter Text Here Akshit
-                        </p>
+                    <div className="w-full lg:w-5/12 flex flex-col justify-center pl-12 pr-8 mt-4">
+                        <h3 className="text-2xl font-bold text-blue-900">Motto:</h3>
+                        <div className="mt-6 text-xl font-semibold tracking-tight mb-3 text-gray-500">Empowering Communication, One Sign at a Time.</div>
+                        <h3 className="mt-12 text-2xl font-bold text-blue-900">Quotation:</h3>
+                        <div className="mt-6 text-xl font-semibold tracking-tight mb-3 text-gray-500">
+                            "Learning a language is the first step to building bridges; mastering AUSLAN with Sign-Connect is how we build them stronger.
+                        </div>
                     </div>
                 </div>                    
             </div>

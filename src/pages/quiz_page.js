@@ -139,12 +139,12 @@ const QuizPage = () => {
                 key={i}
                 onClick={() => handleAnswerSelect(currentQuestion, option)}
                 disabled={isSubmitted}
-                className={`option-btn p-4 border rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 ${
-                  answers[currentQuestion] === option ? 'bg-blue-500 text-green' : 'bg-white text-black'
+                className={`option-btn p-4 border-8 border-solid rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 ${
+                  answers[currentQuestion] === option ? 'bg-blue-500 text-black border-black' : 'bg-white text-black'
                 } ${
                   isSubmitted && question.correctAnswer === option
                     ? 'border-green-500'
-                    : isSubmitted && answers[currentQuestion] === option
+                  : isSubmitted && answers[currentQuestion] === option && answers[currentQuestion] !== question.correctAnswer
                     ? 'border-red-500'
                     : ''
                 }`}
