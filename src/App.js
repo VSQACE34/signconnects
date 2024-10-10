@@ -9,7 +9,6 @@ import {
 } from 'react-router-dom';
 // All pages
 import Home from './pages/Home';
-// import Contact from './pages/Contact';
 import Register from './pages/Register';
 import WebsiteLogin from './pages/WebsiteLogin';
 import Login from './pages/Login';
@@ -61,18 +60,38 @@ function App() {
                   <WebsiteLock>
                     <Routes>      
                       <Route path="/" element={<Home />} />
-                      {/* <Route path="/contact" element={<Contact />} /> */}
                       <Route path="/register" element={<Register />} />              
                       <Route path="/login" element={<Login />} />
                       <Route path="/forgot-password" element={<ForgotPassword />} />
                       <Route path="/sign_library" element={<SignLibrary />} />
                       <Route path="/insight" element={<Insight />} />
-                      <Route path="/quiz-selection" element={<QuizSelectionPage />} />
-                      <Route path="/translation" element={<TranslatorPage />} />
-                      <Route path="/quiz" element={<QuizPage />} />
                       <Route path="/hand_sign/:hand_sign" element={<Signs />} />
                       <Route path="/courses" element={<CoursePage />} />
                       <Route path='*' element={<NotFound />} />
+                      <Route
+                        path="/translation"
+                        element={
+                          <ProtectedRoute>
+                            <TranslatorPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/quiz"
+                        element={
+                          <ProtectedRoute>
+                            <QuizPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="quiz-selection"
+                        element={
+                          <ProtectedRoute>
+                            <QuizSelectionPage />
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route
                         path="/lessons/:course_id"
                         element={
