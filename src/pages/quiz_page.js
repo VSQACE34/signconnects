@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import NavBar from '../components/Navbar/NavBar';
 import Footer from '../components/Footer';
-
+import {useDocTitle} from '../components/CustomHook';
 import '../index.css'; // Importing CSS for quiz page
 
 const QuizPage = () => {
+  useDocTitle('Quiz - Sign-Connect');
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(0);

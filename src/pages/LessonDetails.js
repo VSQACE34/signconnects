@@ -6,8 +6,11 @@ import * as ort from 'onnxruntime-web'; // ONNX Runtime for running the model
 import { Camera } from '@mediapipe/camera_utils'; // Import Camera correctly from mediapipe
 import { Holistic } from '@mediapipe/holistic'; // Mediapipe Holistic import
 import { getCookie } from '../components/CookieManage';
+import {useDocTitle} from '../components/CustomHook';
+import signImageFrame from '../images/signImageFrame.png';
 
 const LessonDetails = () => {
+  useDocTitle('Lesson - Sign-Connect');
   const { lesson_id } = useParams();
   const [auslanSigns, setAuslanSigns] = useState([]);
   const [selectedSign, setSelectedSign] = useState(null);
@@ -324,11 +327,12 @@ const LessonDetails = () => {
             <div>
               <div className="flex items-center justify-between mb-4">
                 {/* Image on the left */}
-                <div className="w-1/2">
+                <div className="w-1/2 flex justify-center items-center">
+                <img src={signImageFrame} className="absolute min-w-[200px] w-2/5 h-auto mb-4"/>
                   <img
                     src={selectedSign.image_url}
                     alt={selectedSign.auslan_sign}
-                    className="w-full mb-4"
+                    className="min-w-[150px] w-2/3 h-auto mb-4"
                   />
                 </div>
 

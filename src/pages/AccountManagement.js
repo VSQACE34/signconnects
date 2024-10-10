@@ -3,10 +3,12 @@ import ResetPassword from '../components/ResetPassword';
 import React, { useState } from 'react';
 import Footer from '../components/Footer';
 import { AuthProvider } from '../components/AuthContext';
+import {useDocTitle} from '../components/CustomHook';
 
 
 
 const AccountManagement = () => {
+    useDocTitle('Account Management - Sign-Connect');
     const [activeComponent, setActiveComponent] = useState('resetPassword');
     return (
         <>           
