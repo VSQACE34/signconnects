@@ -37,16 +37,37 @@ const ForgotPassword = (props) => {
     const [reenteredPassword, setReenteredPassword] = useState('');
 
     const isValidPassword = (password) => {
-        const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/;
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$/;
         return passwordRegex.test(password);
+    };
+
+    const passAllowedSpecialChar = (password) => {
+        const passwordRegex = /^[A-Za-z0-9@#\$!]{8,}$/;
+        return passwordRegex.test(password);
+    };
+
+    const isValidUsername = (username) => {
+        const usernameRegex = /^[A-Za-z0-9@#\$!]+$/;
+        return usernameRegex.test(username);
     };
 
     const validateForm = () => {
         let formErrors = {};
-        if (!username) formErrors.username = 'Username is required';
+        if (!username) {
+            formErrors.username = 'Username is required';
+        } else if (!isValidUsername(username)) {
+            formErrors.username = 'Username cannot contain special characters other than @#$!';
+        }
         if (!securityQuestion) formErrors.securityQuestion = 'Please select a security question';
         if (!securityAnswer) formErrors.securityAnswer = 'Security answer is required';
-        if (!password) formErrors.password = 'Password is required';
+        if (!password) {
+            formErrors.password = 'Password is required';
+        } else if (!isValidPassword(password)) {
+            formErrors.password = 'Password must be at least 8 characters, contain at least 1 lower case, 1 uppercase letter and 1 number';
+        } else if (!passAllowedSpecialChar(password)) {
+            formErrors.password = 'Only !@#$ special characters are allowed';
+        }
+        
         if (!reenteredPassword) formErrors.reenteredPassword = 'Please re-enter your password';
         if (password && reenteredPassword && password !== reenteredPassword) {
             formErrors.match = 'Passwords do not match';
