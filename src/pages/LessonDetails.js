@@ -322,6 +322,10 @@ const LessonDetails = () => {
             </ul>
           </div>
 
+          <div>
+            <h2 className="flex text-3xl justify-center font-semibold tracking-tight mb-5 text-blue-700">This is the hand sign for {selectedSign?.auslan_sign || '...'}</h2>
+          </div>
+
           {/* Display the selected sign's details */}
           {selectedSign && (
             <div>
@@ -341,6 +345,9 @@ const LessonDetails = () => {
                   <video
                     key={selectedSign.auslan_sign}
                     controls
+                    loop
+                    muted
+                    autoplay
                     className="w-full"
                   >
                     <source src={selectedSign.video_url} type="video/mp4" />
@@ -350,12 +357,12 @@ const LessonDetails = () => {
               </div>
 
               {/* "Test" button */}
-              <div className="flex justify-end">
+              <div className="flex justify-center">
                 <button
                   onClick={handleTest}
-                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
+                  className="bg-blue-600 hover:bg-blue-400 text-gray-100 inline-flex items-center justify-center w-auto px-6 py-3 shadow-xl rounded-xl"
                 >
-                  Test
+                  Open Camera and Try it now!
                 </button>
               </div>
               <div className="mt-8 flex justify-center">
